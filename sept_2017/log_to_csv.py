@@ -1,5 +1,5 @@
 '''Read data_log to convert it at csv file.'''
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name, line-too-long
 import re
 
 # ENV_VARIABLE
@@ -14,7 +14,6 @@ regexp_v2 = r'^([\d]+) [\w]{3} [\d]{2} [\d:]+ ([\w]+) [\d]+: [\w\.]* ?[\.\*]?[\w
 fo = open(file_test, "r")
 for count, line in enumerate(fo):
     # line = fo.readline()
-   
     match = re.search(regexp_v1, line)
     if not match:
         match = re.search(regexp_v2, line)
