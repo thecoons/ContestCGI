@@ -18,7 +18,8 @@ for count in range(10):
         match = re.search(regexp_v2, line)
     if match:
         print('{0}\n{1}\n{2}\n'.format(match.group(1),
-                                    match.group(2),
-                                    match.group(3)))
+                                       match.group(2),
+                                       match.group(3)))
+                                       
     else:
         print("NO MATCH ####\n####\n####\n####\n")
