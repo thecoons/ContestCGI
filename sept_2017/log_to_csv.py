@@ -15,8 +15,8 @@ import csv
 
 # FIle Test Win: 20040610.log || 20010411.log
 file_test = "C:\\Users\\antonin.barthelemy\\Documents\\ContestCGI\\sept_2017\\data\\syslog-v3.3\\20040610.log"
-dir_log = "C:\\Users\\antonin.barthelemy\\Documents\\ContestCGI\\sept_2017\\data_test\\"
-dir_csv = "C:\\Users\\antonin.barthelemy\\Documents\\ContestCGI\\sept_2017\\data_test\\csv\\"
+dir_log = "C:\\Users\\antonin.barthelemy\\Documents\\ContestCGI\\sept_2017\\data\\syslog-v3.3\\"
+dir_csv = "C:\\Users\\antonin.barthelemy\\Documents\\ContestCGI\\sept_2017\\data\\syslog-v3.3\\csv\\"
 # Regexp pour get le name du fichier
 regexp_filename = r'\\([\w]+).log$'
 
@@ -25,11 +25,11 @@ dir_log_content = glob.glob(dir_log+'*.log')
 
 
 # Regexp pour la 1er gen de log : timestamp, Ap_add, Action_string
-regexp_v1 = r'^([\d]+) [\w]{3} +[\d]{1,2} [\d:]+ ([\w]+) [\w]+ \(Info\): (.*)'
-regexp_v2 = r'^([\d]+) [\w]{3} +[\d]{1,2} [\d:]+ ([\w]+) [\d]+: [\w\.]* ?[\.\*]?[\w]{3} +[\d]{1,2} [\d:\.]+ %[\w]+-[\d]+-[\w]+: (.*)'
+regexp_v1 = r'^([\d]+) [\w]{3} +[\d]{1,2} [\d:]+ ([a-zA-Z]+[0-9]+)([\w]+) [\w]+ \(Info\): (.*)'
+regexp_v2 = r'^([\d]+) [\w]{3} +[\d]{1,2} [\d:]+ ([a-zA-Z]+[0-9]+)([\w]+) [\d]+: [\w\.]* ?[\.\*]?[\w]{3} +[\d]{1,2} [\d:\.]+ %[\w]+-[\d]+-[\w]+: (.*)'
 
 # Regexp pour les info => action, MAC
-regexp_g3_v1 = r'Station (\w+) (\w+)'
+regexp_g3_v1 = r'^Station (\w+) (\w+)'
 regexp_g3_v2 = r'^(\w+) [from]* ?(\w+), reason'
 regexp_g3_v3 = r'^Packet to client (\w+)'
 regexp_g3_v4 = r'^Interface \w+, (\w+) Station (\w+)'
@@ -43,35 +43,36 @@ for log_file in dir_log_content:
     match_name = re.search(regexp_filename, log_file)
     current_filename = match_name.group(1)
     ### Ouverture du csv de raffinement
-    # co = csv.writer(open(dir_csv+current_filename+'_raf.csv','w'))
-    # co.writerow(['Timestamp','AP','Action'])
+    co = csv.writer(open(dir_csv+current_filename+'_raf.csv','w'))
+    co.writerow(['Timestamp','Batiment','AP','Mac','Action'])
+
+    time_ref = -1
     for count, line in enumerate(fo):
         # line = fo.readline()
-        row_current = ['','','','']
+        row_current = ['','','','','']
         match = re.search(regexp_v1, line)
         if not match:
             match = re.search(regexp_v2, line)
         if match:
-            # print('{0}\n{1}\n{2}\n'.format(match.group(1),
-            #                                match.group(2),
-            #                                match.group(3)))
-            row_current[0], row_current[1] = match.group(1), match.group(2)
-            info = match.group(3)
+            if time_ref == -1:
+                time_ref = int(match.group(1))
+            row_current[0], row_current[1], row_current[2] = match.group(1), match.group(2), match.group(3)
+            info = match.group(4)
             match_info = re.search(regexp_g3_v1, info)
             if match_info:
-                row_current[2], row_current[3] = match_info.group(1), match_info.group(2)
+                row_current[3], row_current[4] = match_info.group(1), match_info.group(2)
             if not match_info:
                 match_info = re.search(regexp_g3_v2, info)
                 if match_info:
-                    row_current[2], row_current[3] = match_info.group(2), match_info.group(1)
+                    row_current[3], row_current[4] = match_info.group(2), match_info.group(1)
             if not match_info:
                 match_info = re.search(regexp_g3_v3, info)
                 if match_info:
-                    row_current[2], row_current[3] = match_info.group(1), match_info.group(2)
+                    row_current[3], row_current[4] = match_info.group(1), 'Disassociation'
             if not match_info:
                 match_info = re.search(regexp_g3_v4, info)
                 if match_info:
-                    row_current[2], row_current[3] = match_info.group(1), match_info.group(2)
+                    row_current[3], row_current[4] = match_info.group(2), match_info.group(1)
 
             if not match_info:
                 match_trash = re.search(regexp_g3_trash, info)
@@ -81,9 +82,9 @@ for log_file in dir_log_content:
             #     print(info)
 
             if match_info:
-                print(row_current)
-            
-            # co.writerow([match.group(1),match.group(2),match.group(3)])
+                row_current[4] = row_current[4].lower()
+                row_current[0] = int(row_current[0]) - time_ref
+                co.writerow(row_current)
 
         else:
             print(line)
