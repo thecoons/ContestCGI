@@ -15,8 +15,8 @@ import csv
 
 # FIle Test Win: 20040610.log || 20010411.log
 file_test = "C:\\Users\\antonin.barthelemy\\Documents\\ContestCGI\\sept_2017\\data\\syslog-v3.3\\20040610.log"
-dir_log = "C:\\Users\\antonin.barthelemy\\Documents\\ContestCGI\\sept_2017\\data\\syslog-v3.3\\"
-dir_csv = "C:\\Users\\antonin.barthelemy\\Documents\\ContestCGI\\sept_2017\\data\\syslog-v3.3\\csv\\"
+dir_log = "C:\\Users\\antonin.barthelemy\\Documents\\ContestCGI\\sept_2017\\data_test\\"
+dir_csv = "C:\\Users\\antonin.barthelemy\\Documents\\ContestCGI\\sept_2017\\data_test\\csv\\"
 # Regexp pour get le name du fichier
 regexp_filename = r'\\([\w]+).log$'
 
@@ -33,6 +33,7 @@ regexp_g3_v1 = r'^Station (\w+) (\w+)'
 regexp_g3_v2 = r'^(\w+) [from]* ?(\w+), reason'
 regexp_g3_v3 = r'^Packet to client (\w+)'
 regexp_g3_v4 = r'^Interface \w+, (\w+) Station (\w+)'
+regexp_g3_v5 = r'^Interface \w+, Station (\w+) (\w+)'
 
 regexp_g3_trash = r'^(Disconnect remote|Interface Dot11Radio0, no SSIDs|Interface Dot11Radio0, unable|\w+: Drv Add|Detected probable reset|Interface Dot11Radio0, no radio|Interface Dot11Radio0, frequency|Interface Dot11Radio0, parent|Interface Dot11Radio0, upgrading|Interface Dot11Radio0, flashing|Successfully updated|Lost Association|Associated to Parent|Associate Response|Ethernet|Bound|Started|Stopped|Reassociate Response|Backbone)'
 #### APP
@@ -73,6 +74,10 @@ for log_file in dir_log_content:
                 match_info = re.search(regexp_g3_v4, info)
                 if match_info:
                     row_current[3], row_current[4] = match_info.group(2), match_info.group(1)
+            if not match_info:
+                match_info = re.search(regexp_g3_v5, info)
+                if match_info:
+                    row_current[3], row_current[4] = match_info.group(1), match_info.group(2)
 
             if not match_info:
                 match_trash = re.search(regexp_g3_trash, info)
