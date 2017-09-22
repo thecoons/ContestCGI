@@ -44,13 +44,13 @@ for log_file in dir_log_content:
     match_name = re.search(regexp_filename, log_file)
     current_filename = match_name.group(1)
     ### Ouverture du csv de raffinement
-    co = csv.writer(open(dir_csv+current_filename+'_raf.csv','w'))
-    co.writerow(['Timestamp','Batiment','AP','Mac','Action'])
+    co = csv.writer(open(dir_csv+current_filename+'_raf.csv', 'w'))
+    co.writerow(['Timestamp', 'Batiment', 'AP', 'Mac', 'Action'])
 
     time_ref = -1
     for count, line in enumerate(fo):
         # line = fo.readline()
-        row_current = ['','','','','']
+        row_current = ['', '', '', '', '']
         match = re.search(regexp_v1, line)
         if not match:
             match = re.search(regexp_v2, line)

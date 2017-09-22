@@ -1,8 +1,10 @@
-import pandas as pd
-import csv
-import os
+'''Organize to tracker.'''
 import glob
+import os
 import re
+
+import pandas as pd
+
 # pylint: disable=invalid-name, line-too-long
 ### Env Variables Windows
 csv_ref_path = "C:\\Users\\antonin.barthelemy\\Documents\\ContestCGI\\sept_2017\\data_test\\csv\\"
