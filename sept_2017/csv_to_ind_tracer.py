@@ -2,15 +2,16 @@
 import glob
 import os
 import re
-
+import csv
+import progressbar as prb
 import pandas as pd
 
 # Format Vecteur ['AcadBldg', 'ResBldg', 'LibBldg', 'SocBldg', 'AdmBldg', 'OthBldg', 'AthBldg']
 
 # pylint: disable=invalid-name, line-too-long
 ### Env Variables Windows
-csv_ref_path = "C:\\Users\\antonin.barthelemy\\Documents\\ContestCGI\\sept_2017\\data_test\\csv\\"
-user_tracker_path = "C:\\Users\\antonin.barthelemy\\Documents\\ContestCGI\\sept_2017\\data_test\\tracker\\"
+csv_ref_path = "C:\\Users\\antonin.barthelemy\\Documents\\ContestCGI\\sept_2017\\data\\csv\\"
+user_tracker_path = "C:\\Users\\antonin.barthelemy\\Documents\\ContestCGI\\sept_2017\\data\\tracker\\"
 
 regexp_filename = r'\\([\w]+)_raf.csv$'
 
@@ -18,10 +19,13 @@ csv_dir_content = glob.glob(csv_ref_path + '*.csv')
 
 regexp_building = r'^([A-Za-z]+)[0-9]+'
 
+bar = prb.ProgressBar()
 
-for csv_file in csv_dir_content:
+for csv_file in bar(csv_dir_content):
     # os.makedirs(user_tracker_path+current_filename)
-
+    match_filename = re.search(regexp_filename, csv_file)
+    co = csv.writer(open(user_tracker_path+match_filename.group(1)+"_trk.csv", "w"))
+    co.writerow(['AcadBldg', 'ResBldg', 'LibBldg', 'SocBldg', 'AdmBldg', 'OthBldg', 'AthBldg'])
     match_name = re.search(regexp_filename, csv_file)
     current_filename = match_name.group(1)
     df_csv = pd.read_csv(csv_file)
@@ -72,5 +76,6 @@ for csv_file in csv_dir_content:
                 dict_return[key] = 0
         # print(dict_return)
         # print([x for x, y in dict_return.items()])
-        print([y for x, y in dict_return.items()])
-        
+        co.writerow([y for x, y in dict_return.items()])
+        # print([y for x, y in dict_return.items()])
+         
