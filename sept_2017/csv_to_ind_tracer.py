@@ -12,7 +12,7 @@ import pandas as pd
 ### Env Variables Windows
 csv_ref_path = "C:\\Users\\antonin.barthelemy\\Documents\\ContestCGI\\sept_2017\\data\\csv\\"
 user_tracker_path = "C:\\Users\\antonin.barthelemy\\Documents\\ContestCGI\\sept_2017\\data\\tracker\\"
-user_agr_path = "C:\\Users\\antonin.barthelemy\\Documents\\ContestCGI\\sept_2017\\data\\agr\\"
+user_agr_path = "C:\\Users\\antonin.barthelemy\\Documents\\ContestCGI\\sept_2017\\data\\agr_activity\\"
 
 regexp_filename = r'\\([\w]+)_raf.csv$'
 
@@ -26,7 +26,7 @@ for csv_file in bar(csv_dir_content):
     match_name = re.search(regexp_filename, csv_file)
     current_filename = match_name.group(1)
     
-    os.makedirs(user_tracker_path+current_filename)
+    # os.makedirs(user_tracker_path+current_filename)
 
     co = csv.writer(open(user_agr_path+current_filename+"_agr.csv", "w"))
     co.writerow(['Mac_ID', 'AcadBldg', 'ResBldg', 'LibBldg', 'SocBldg', 'AdmBldg', 'OthBldg', 'AthBldg'])
@@ -34,7 +34,7 @@ for csv_file in bar(csv_dir_content):
     df_csv = pd.read_csv(csv_file)
     df_grouped_mac = df_csv.groupby('Mac')
     for name, group in df_grouped_mac:
-        group.to_csv(user_tracker_path+current_filename+"\\"+name+"_trk.csv", index=False)
+        # group.to_csv(user_tracker_path+current_filename+"\\"+name+"_trk.csv", index=False)
         # print(group)
         current_build = ''
         start_time = -1
@@ -74,7 +74,7 @@ for csv_file in bar(csv_dir_content):
                 sum_mesure += snap[0]
                 sum_quo += snap[1] - snap[0]
             if sum_quo != 0:
-                dict_return[key] = round(sum_mesure / sum_quo,5)
+                dict_return[key] = sum_quo
             else:
                 dict_return[key] = 0
         # print(dict_return)
